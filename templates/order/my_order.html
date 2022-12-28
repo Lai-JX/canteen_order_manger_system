@@ -1,0 +1,36 @@
+{% extends './order_base.html' %}
+{% block preproduct %}
+<div class="container headerdiv">
+    <h2 class="headertext" align="center">我的订单</h2>
+</div>
+{% endblock %}
+{% block product_content %}
+
+
+<style>
+    	.table th, .table td {
+    		text-align: center;
+    		vertical-align: middle!important;
+    	}
+
+</style>
+<div class='wrapper fluid margin page-menu-list'>
+    <ul class='grid padded-3 product'>
+        <li>
+            <a id='menu-product-related-affogato' href='/menu/beverages/coffee-plus-ice-cream/' class='thumbnail'>
+            <div class='preview circle' style='background-image: url("/images/products/affogato.jpg")'></div>
+            <strong>阿馥奇朵™</strong>
+            </a>
+        </li>
+
+        <li>
+            <a id='menu-product-related-cold-brew-malt' href='/menu/beverages/coffee-plus-ice-cream/' class='thumbnail'>
+                <div class='preview circle' style='background-image: url("/images/products/cold-brew-malt.jpg")'></div>
+                <strong>麦芽雪冷萃™</strong>
+            </a>
+        </li>
+        <h3 class='caption'>咖啡融合冰淇淋</h3>
+    </ul>
+</div>
+
+{% endblock %}

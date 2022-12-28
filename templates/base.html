@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>校园食堂外送点餐系统</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+
+    <!-- Alternative to Bootstrap 3 Glyphicons -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+
+{#    <script charset="UTF-8">#}
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+
+
+    <link rel="stylesheet" href="{% static 'css/master.css' %}">
+
+</head>
+<style>
+    	.table th, .table td {
+    		text-align: center;
+    		vertical-align: middle!important;
+    	}
+        .li_{
+            display:block;
+            overflow:hidden;
+            word-break:keep-all;
+            white-space:nowrap;
+            text-overflow:ellipsis;
+            font-size: 22px;
+            {#width: 100px;#}
+            {#height: 200px;#}
+        }
+
+
+</style>
+
+<body style="background-image: url('/static/images/background.webp')">
+<nav class="navbar navbar-expand-lg  mynav" role="navigation" id="navbar" style="background: burlywood;">
+    <div class="container"> {# style="width: 100%;padding-right: 15px;padding-bottom: 5px; padding-top: 5px; margin-right: auto;margin-left: auto;" #}
+        <div class="navbar-nav align-items-center">
+            <a class="navbar-brand mynav" href="#" style="font-size: 20px;color: white">校园食堂外送点餐系统</a>
+        </div>
+        <div class="navbar-nav" style="font-size: 16px;color: white">
+            <a class="nav-item nav-link" href="/" class="btn btn-simple" style="color: white">食堂</a>
+            <a class="nav-item nav-link" href="/store" class="btn btn-simple" style="color: white">窗口</a>
+            <a class="nav-item nav-link" href="/dish" class="btn btn-simple" style="color: white">菜品</a>
+            <a class="nav-item nav-link" href="/order" class="btn btn-simple" style="color: white">我的订单</a>
+            <a class="nav-item nav-link" href="/user/info" class="btn btn-simple" style="color: white">个人中心</a>
+        </div>
+
+        <div class="navbar-nav ml-auto" style="font-size: 16px">
+            {% if request.session.is_login %}
+            <a class="nav-item nav-link"  href="#"  class="nav-item nav-link" style="color: white">当前在线：{{ request.session.user_name }}</a>
+            <a class="nav-item nav-link"  href="/user/logout/"  class="nav-item nav-link" style="color: white">退出</a>
+            {% else %}
+{#            <a class="nav-item nav-link" href="/admin/" class="nav-item nav-link" >管理员登录</a>#}
+            <a class="nav-item nav-link" href="/user/login/" class="nav-item nav-link" style="color: white">登录</a>
+            <a class="nav-item nav-link" href="/user/register/" class="btn btn-simple"style="color: white">顾客注册</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<div class="messages">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+<div class="container mycontent">
+    {% block content %}
+
+    {% endblock %}
+</div>
+
+<canvas id="canvas"></canvas>
+
+
+<!-- Latest compiled and minified jQuery -->
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://unpkg.com/popper.js@1.15.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+
+</body>
+</html>

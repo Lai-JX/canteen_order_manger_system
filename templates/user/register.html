@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container formback">
+  <div class="loginform jumbotron">
+    <h2>注册</h2>
+<!--    <div class="container">-->
+<!--        <div class="col-md-4 col-md-offset-4">-->
+          <form class='form-register' action="/user/register/" method="post">
+              <h3 class="text-left">基本信息:</h3>
+              {% if register_form.captcha.errors %}
+                <div class="alert alert-warning">{{ register_form.captcha.errors }}</div>
+              {% elif message %}
+                <div class="alert alert-warning">{{ message }}</div>
+              {% endif %}
+
+              {% csrf_token %}
+              <div class="form-group">
+                  <div class="text-left"><label for="InputUsername">用户名:</label></div>
+                  {{ register_form.username}}
+              </div>
+              <div class="form-group">
+                  <div class="text-left"><label for="InputPassword">密码：</label></div>
+                  {{ register_form.password1 }}
+              </div>
+              <div class="form-group">
+                  <div class="text-left"><label for="InputUsername">确认密码:</label></div>
+                  {{ register_form.password2 }}
+              </div>
+              <div class="form-group">
+                  <div class="text-left"><label for="InputUsername">电话号码:</label></div>
+                  {{ register_form.phone }}
+              </div>
+
+            <div class="form-group">
+                  <div class="text-left"><label for="InputUsername">性别:</label></div>
+                  {{ register_form.sex }}
+              </div>
+
+
+{#          <form class='form-register' action="/user/register/" method="post">#}
+              <h3 class="text-left">地址:</h3>
+{#              {% csrf_token %}#}
+              <div class="form-group">
+                  <div class="text-left"><label for="InputUsername">楼栋编号:</label></div>
+                  {{ register_form.building }}
+              </div>
+              <div class="form-group">
+                  <div class="text-left"><label for="InputUsername">楼层编号:</label></div>
+                  {{ register_form.floor }}
+              </div>
+              <div class="form-group">
+                  <div class="text-left"><label for="InputUsername">门牌号:</label></div>
+                  {{ register_form.dormitory_num }}
+              </div>
+
+              <div class="form-group">
+                  <div class="text-left"><label for="InputUsername">详细描述:</label></div>
+                  {{ register_form.address_describe }}
+              </div>
+{#              <div class="form-group">#}
+{#                <div class="text-left"><label for="InputPassword1">验证码:</label></div>#}
+{#                {{ register_form.captcha }}#}
+{#              </div>#}
+
+              <button type="submit" class="btn btn-default pull-left"><a href="/user/login/"  >直接登录</a></button>
+              <button type="submit" class="btn btn-primary pull-right">注册</button>
+{#          </form>#}
+          </form>
+        </div>
+    </div> <!-- /container -->
+{% endblock %}
