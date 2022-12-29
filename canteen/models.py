@@ -43,6 +43,13 @@ class Store(models.Model):
 
     def __str__(self):          # 决定了外键的值
         return self.canteen_id.canteen_name+self.store_name
+    def update_store_url(self): # 更新需要跳转到新的页面，但是需要知道更新的是哪一个
+        # print('update_store')
+        return reverse("update_store",kwargs={'store_id': self.store_id})
+    def del_store_url(self): # 更新需要跳转到新的页面，但是需要知道更新的是哪一个
+        # print('del_store')
+        return reverse("del_store",kwargs={'store_id': self.store_id})
+
 
 class Dish(models.Model):
     dish_id = models.AutoField(primary_key=True, verbose_name = '菜品编号')
@@ -77,7 +84,7 @@ class Dish(models.Model):
 
 class Manager(models.Model):
     manager_id = models.AutoField(primary_key=True, verbose_name = '管理员编号')
-    manager_name = models.CharField(max_length=20, verbose_name='管理员昵称')
+    manager_name = models.CharField(max_length=20, verbose_name='管理员昵称', unique=True)
     manager_phone = models.CharField(max_length=20,verbose_name='管理员联系方式')
     manager_pwd = models.CharField(max_length=100,verbose_name='管理员密码')
     manager_canteen = models.ForeignKey(Canteen, models.SET_NULL, blank=True, null=True, verbose_name='管理的食堂')

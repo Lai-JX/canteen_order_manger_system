@@ -26,11 +26,34 @@ def show_order(request):
         return redirect('/user/login/')
 
     user_id = request.session['user_id']
+    order_list = Indent.objects.filter(customer_id=user_id)
+    # 整理数据，方便输出
+    order_list_ = []
+    order = {}
+    dish = {}
+    for i in order_list:
+        order = {}
+        order['id'] = i.indent_id
+        order['time'] = i.date_time
+        order['canteen_name'] = i.canteen.canteen_name
+        order['store_name'] = i.store.store_name
+        order['phone'] = i.customer.customer_phone
+        order['addr'] = i.indent_address
+        order['state'] = i.indent_state
+        order['price'] = i.indent_price
+        order['comment'] = '未评价' if i.comment is None else i.comment
+        dishes = []
+        for j in i.dishes.all():
+            dish = {}
+            dish['name'] = j.dish_name
+            dish['price'] = j.dish_price
+            dish['num'] = IndentInventory.objects.get(indent=i.indent_id,dish=j.dish_id).dish_num
+            dishes.append(dish)
+        order['dishes'] = dishes
+        order_list_.append(order)
 
-    context = {
-        'order_list': Indent.objects.filter(customer_id=user_id),
-    }
-    return render(request, 'order/my_order.html', locals())
+
+    return render(request, 'order/my_order.html', {'order_list':order_list_})
 
 
 def get_order_add(request, dish_id):

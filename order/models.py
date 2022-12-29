@@ -30,7 +30,7 @@ class Comment(models.Model):
 class Indent(models.Model):
     indent_id = models.AutoField(primary_key=True, verbose_name = '订单编号')
     customer = models.ForeignKey(CustomerInfo, models.CASCADE, verbose_name='顾客')
-    store = models.ForeignKey(Store, models.DO_NOTHING, verbose_name='商铺')
+    store = models.ForeignKey(Store, models.SET_NULL,blank=True, null=True, verbose_name='商铺')
     canteen = models.ForeignKey(Canteen, models.DO_NOTHING, verbose_name='食堂')
     comment = models.ForeignKey(Comment, models.SET_NULL, blank=True, null=True, verbose_name='评论')
     date_time = models.DateTimeField(auto_now_add=True, verbose_name='下单时间')

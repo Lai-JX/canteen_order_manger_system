@@ -267,7 +267,8 @@
     </div>
 
     {% endif %}
-
+{#    显示当前订单 #}
+    {% if request.session.label == 0 %}
     <form action="" method="post">
     {% csrf_token %}
     <input type="hidden" name="show" value=1>
@@ -275,6 +276,7 @@
             <button class='button primary trigger' rel='menu-search-overlay' name="show1" style="font-size: 16px">当前订单</button>
         </div>
     </form>
+    {% endif %}
 
 
 

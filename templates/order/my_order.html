@@ -1,8 +1,8 @@
 {% extends './order_base.html' %}
 {% block preproduct %}
-<div class="container headerdiv">
-    <h2 class="headertext" align="center">我的订单</h2>
-</div>
+{#<div class="container headerdiv">#}
+{#    <h2 class="headertext" align="center">历史订单</h2>#}
+{#</div>#}
 {% endblock %}
 {% block product_content %}
 
@@ -12,25 +12,103 @@
     		text-align: center;
     		vertical-align: middle!important;
     	}
+        .dashed {
+            width: 100%;
+            padding:5px;
+            background: linear-gradient(
+                to left,
+                transparent 0%,
+                transparent 50%,
+                black 50%,
+                black 100%
+            );
+            background-size: 10px 4px; /* 第一个参数控制虚线的间隙（利用的是图片的放大效果一样），第二个参数控制虚线的粗细 */
+            background-repeat: repeat-x;
+            background-position: bottom; /* 控制方向：top、bottom */
+        }
+
 
 </style>
-<div class='wrapper fluid margin page-menu-list'>
-    <ul class='grid padded-3 product'>
-        <li>
-            <a id='menu-product-related-affogato' href='/menu/beverages/coffee-plus-ice-cream/' class='thumbnail'>
-            <div class='preview circle' style='background-image: url("/images/products/affogato.jpg")'></div>
-            <strong>阿馥奇朵™</strong>
-            </a>
-        </li>
+    <div class='overlay active' style="background: #ececec; opacity: 0.95;margin-top: 6vh; padding-top: 10px;width:100%;height:100vh;overflow-y:auto">
+      <hr class='body'>
+        <h2 style="text-align:center; font-weight:bold; font-size: 24px; margin-bottom: 20px">历史订单</h2>
+        {% for order in order_list %}
+        <ul class='flex justify-around logging-in-element', style="margin-top: 20px">
+            <li class="li_">
+                <p><strong>订单编号：</strong>{{ order.id }}</p>
+            </li>
+            <li class="li_">
+                <p><strong>创建时间：</strong>{{ order.time }}</p>
+            </li>
+            <li class="li_">
+                <p><strong>所选食堂：</strong>{{ order.canteen_name }}</p>
+            </li>
+            <li class="li_">
+                <p><strong>所选商家：</strong>{{ order.store_name }}</p>
+            </li>
+            <li class="li_">
+                <p><strong>联系方式：</strong>{{ order.phone }}</p>
+            </li>
 
-        <li>
-            <a id='menu-product-related-cold-brew-malt' href='/menu/beverages/coffee-plus-ice-cream/' class='thumbnail'>
-                <div class='preview circle' style='background-image: url("/images/products/cold-brew-malt.jpg")'></div>
-                <strong>麦芽雪冷萃™</strong>
-            </a>
-        </li>
-        <h3 class='caption'>咖啡融合冰淇淋</h3>
-    </ul>
-</div>
+
+            <li class="li_">
+                <p><strong>地址：</strong>{{ order.addr }}</p>
+            </li>
+
+            <li class="li_">
+                <p><strong>订单状态：</strong>{{ order.state }}</p>
+            </li>
+            <li class="li_">
+                <p><strong>订单总价：</strong>{{ order.price }}</p>
+            </li>
+        </ul>
+        <div class="table-responsive text-nowrap">
+
+            <table class="table table-striped" style="font-size: 12px">
+                <thead>
+                <tr>
+                    <th scope="col">编号</th>
+                    <th scope="col">菜品</th>
+                    <th scope="col">菜品单价</th>
+                    <th scope="col">菜品数量</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for dish in order.dishes %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ dish.name }}</td>
+                    <td>{{ dish.price }}</td>
+                    <td>{{ dish.num }}</td>
+                </tr>
+                    {% empty %}
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+        <p style="margin-left: 50px"><strong>评价：</strong>{{ order.comment }}</p>
+        <div class="dashed"></div>
+        {% endfor %}
+      </div>
+    </div>
+
+{#    <ul class='grid padded-3 product'>#}
+{#        <li>#}
+{#            <a id='menu-product-related-affogato' href='/menu/beverages/coffee-plus-ice-cream/' class='thumbnail'>#}
+{#            <div class='preview circle' style='background-image: url("/images/products/affogato.jpg")'></div>#}
+{#            <strong>阿馥奇朵™</strong>#}
+{#            </a>#}
+{#        </li>#}
+{##}
+{#        <li>#}
+{#            <a id='menu-product-related-cold-brew-malt' href='/menu/beverages/coffee-plus-ice-cream/' class='thumbnail'>#}
+{#                <div class='preview circle' style='background-image: url("/images/products/cold-brew-malt.jpg")'></div>#}
+{#                <strong>麦芽雪冷萃™</strong>#}
+{#            </a>#}
+{#        </li>#}
+{#        <h3 class='caption'>咖啡融合冰淇淋</h3>#}
+{#    </ul>#}
+{#</div>#}
 
 {% endblock %}

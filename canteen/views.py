@@ -1,13 +1,27 @@
 import os
 
+import requests
 from django.contrib import messages
 from django.shortcuts import render, redirect
 
 from order.models import Indent, IndentInventory
 from user.models import Address
-from .models import Canteen, Store, Dish
+from .forms import storeForm
+from .models import Canteen, Store, Dish, Manager
+
 
 # Create your views here.
+
+# 新增商铺
+# def is_add_store(request):
+#     if request.POST.get('add_store') is not None:
+#         print('add_store')
+#         return True
+#     return False
+
+
+
+
 def show_canteen(request):
     context = {
             'canteen_list': Canteen.objects.all(),
@@ -27,7 +41,9 @@ def show_store(request):
     #     store.dishes.add(dish)
     #     store.save()
     order_show, order, dish_list_ = show_cur_order(request)
-
+    # if is_add_store(request):
+    #     print('is add')
+    #     return redirect('/add_store/')
     context = {
         'canteen_list': Canteen.objects.all(),
         'store_list': Store.objects.all(),
@@ -41,7 +57,7 @@ def show_store(request):
     # print(type(Canteen.objects.all()[0].canteen_id))
     # print(type(Store.objects.all()[0].canteen_id.canteen_id))
     # print(Canteen.objects.all()[0].canteen_id==Store.objects.all()[0].canteen_id)
-    print(Store.objects.all()[0].store_image)
+    # print(Store.objects.all()[0].store_image)
     return render(request, 'canteen/store_list.html', context)
 
 def show_dish(request):
@@ -64,7 +80,7 @@ def show_dish(request):
         'dish_list_':dish_list_,
     }
 
-    print(Dish.objects.all()[0].dish_id)
+    # print(Dish.objects.all()[0].dish_id)
     # print(Store.objects.all()[0].dish_id)
     # print(dish_list_[0]['dish_id'])
     return render(request,'canteen/dish_list.html', context)
@@ -90,13 +106,13 @@ def show_cur_order(request):
         # for i in order.dishes.all():
         #     i.dish_order_num = 0
         #     i.save()
-        for i in dish_list:
-            i.dish_num = 0
-            i.save()
+        # for i in dish_list:
+        #     i.dish_num = 0
+        #     i.save()
         order.indent_state='已下单'
         order.save()
         del request.session['order_id']
-        return False, None, dish_list
+        return False, None, None
 
     show = request.POST.get('show')
     # 是否展示订单
@@ -114,7 +130,79 @@ def show_cur_order(request):
             return False, None,dish_list
         order_id = request.session['order_id']
         order = Indent.objects.get(indent_id=order_id)
-
-
-
     return order_show, order,dish_list
+
+def del_store(request, store_id):
+    print('del store:store_id:',store_id)
+    Store.objects.get(store_id=store_id).delete()
+    return redirect('/store/')
+
+def update_store(request, store_id):
+    print('update store:store_id:', store_id)
+    print('user_id:',(request.session['user_id']))
+    # 如果是商家，则只能修改自己的
+    if request.session['label'] == 1:
+        try:
+            user = Manager.objects.get(manager_label=0,manager_id=request.session['user_id'])
+            if user.manager_store.store_id != store_id:
+                messages.warning(request, '商铺只允许被所属商家或食堂管理员修改！')
+                return redirect('/store/')
+        except:
+            messages.warning(request, '商铺只允许被所属商家或食堂管理员修改！')
+            return redirect('/store/')
+    request.session['update_store_id'] = store_id
+    return redirect('/add_store/')
+
+def add_store(request):
+    print('add_store url')
+    print(request.method)
+    update_store_id = request.session.get('update_store_id')
+    print('update_store_id:',update_store_id)
+    # 判断是更新还是新增
+    if update_store_id is not None:
+        store = Store.objects.get(store_id=update_store_id)
+        store_form = storeForm({
+            'store_name':store.store_name,
+            'store_des' :store.store_describe,
+            'store_state' :store.store_state,
+            'store_image' : store.store_image,
+            # 'manager_name' = None,
+        })
+    else:
+        store_form = storeForm()
+    if request.method == "POST":
+        store_form = storeForm(request.POST, request.FILES)    # 将表单用一个类封装起来 # request.POST返回一个字典，get是字典的内置方法
+        message = '请检查填写内容！'
+        print('store_form valid',store_form.is_valid())
+        if store_form.is_valid():
+            try:
+                # 设置管理商铺的商家
+
+                business = Manager.objects.get(manager_label=0,manager_name=store_form.cleaned_data.get('manager_name'))
+
+            except:
+                messages.warning(request,"商家不存在！")
+                return render(request, 'canteen/add_store.html', locals())
+            # 商铺属性
+            name = store_form.cleaned_data.get('store_name')
+            des = store_form.cleaned_data.get('store_des')
+            image = store_form.cleaned_data.get('store_image')
+            state = store_form.cleaned_data.get('store_state')
+            # 创建商铺
+            print(request.session['user_id'])
+            # 是否为新建商铺
+            if update_store_id is None:
+                store = Store(canteen_id=Manager.objects.get(manager_label=1, manager_id=request.session['user_id']).manager_canteen,)
+
+            store.store_name=name
+            store.store_image=image
+            store.store_state=state
+            store.store_describe=des
+            store.save()
+
+            if update_store_id is not None:
+                business.manager_store = store
+                business.save()
+                del request.session['update_store_id']
+            return redirect('/store/')
+    return render(request,'canteen/add_store.html',locals())

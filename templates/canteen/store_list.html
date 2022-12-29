@@ -58,7 +58,16 @@
                         <h3><b>休息中</b></h3>
                         {% endif %}
                         <p class="card-text li_">{{ j.store_describe }}</p>
-                        <a href="/dish#{{j.store_id}}" class="btn btn-success btn-sm addtocartbutton"><font size="3px">进入窗口</font></a>
+{#                        管理员和商家可更改，但商家只可以修改自己的，也不能删除自己的#}
+                        {% if request.session.label != 0 %}
+                            {% if request.session.label == 2 %}
+                            <a href="{{j.del_store_url}}" class="btn btn-warning btn-sm  "><font size="3px">删除</font></a>
+                            {% endif %}
+                            <a href="{{j.update_store_url}}" class="btn btn-success btn-sm addtocartbutton "><font size="3px">更新</font></a>
+                        {% else %}
+                            <a href="/dish#{{j.store_id}}" class="btn btn-success btn-sm addtocartbutton"><font size="3px">进入窗口</font></a>
+                        {% endif %}
+
                     </div>
                 </li>
             {% endif %}
@@ -67,5 +76,12 @@
     </ul>
 </div>
 {% endfor %}
+
+    {% if request.session.label == 2 %}
+        <div class='frap'>
+            <a href="/add_store/" class='button primary trigger' rel='menu-search-overlay' style="font-size: 16px">新增商铺</a>
+        </div>
+
+    {% endif %}
 
 {% endblock %}
