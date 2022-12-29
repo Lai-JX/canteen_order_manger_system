@@ -15,7 +15,17 @@
                     <div class="card-header" float="center">
                         <h5><b>{{ i.canteen_state }}</b></h5>
 {#                        <h5><b>卫生等级：{{ i.sanitation_level }}</b></h5>#}
-                        <a href="/store#{{i.canteen_id}}" class="btn btn-success btn-sm addtocartbutton"><font size="3px">进入食堂</font></a>
+                        {% if request.session.label == 2 %}
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="canteen_id" value={{ i.canteen_id }}>
+                                <div >
+                                    <button class='btn btn-success btn-sm addtocartbutton' rel='menu-search-overlay' name="show1" style="font-size: 16px">更改状态</button>
+                                </div>
+                            </form>
+                        {% else %}
+                            <a href="/store#{{i.canteen_id}}" class="btn btn-success btn-sm addtocartbutton"><font size="3px">进入食堂</font></a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

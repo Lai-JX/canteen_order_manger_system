@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.shortcuts import render
 from django.shortcuts import redirect
 
-from canteen.models import Manager
+from user.models import Manager
 from . import models
 from . import forms
 

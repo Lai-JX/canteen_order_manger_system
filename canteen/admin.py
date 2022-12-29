@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 # Register your models here.
-from canteen.models import Canteen,Store,Dish,Manager
+from canteen.models import Canteen,Store,Dish
+from user.models import Manager
 
 class CanteenAdmin(admin.ModelAdmin):
     list_per_page = 10

@@ -3,44 +3,49 @@
 {% block content %}
 <div class="container formback">
   <div class="loginform jumbotron">
-    <h2>新增商铺</h2>
+      {% if update_dish_id is not None %}
+         <h2>修改菜品信息</h2>
+      {% else %}
+         <h2>新增菜品</h2>
+      {% endif %}
 <!--    <div class="container">-->
 <!--        <div class="col-md-4 col-md-offset-4">-->
-{#          <form enctype="multipart/form-data" class='form-register' action="/add_store/" method="post">#}
-{#              <h3 class="text-left">基本信息:</h3>#}
-{#              {% if register_form.captcha.errors %}#}
-{#                <div class="alert alert-warning">{{ register_form.captcha.errors }}</div>#}
-{#              {% elif message %}#}
-{#                <div class="alert alert-warning">{{ message }}</div>#}
-{#              {% endif %}#}
-{##}
-{#              {% csrf_token %}#}
-{#              <div class="form-group">#}
-{#                  <div class="text-left"><label for="InputUsername">商铺名称:</label></div>#}
-{#                  {{ store_form.store_name}}#}
-{#              </div>#}
-{#              <div class="form-group">#}
-{#                  <div class="text-left"><label for="InputPassword">商铺描述：</label></div>#}
-{#                  {{ store_form.store_des }}#}
-{#              </div>#}
-{#              <div class="form-group">#}
-{#                  <div class="text-left"><label for="InputUsername">商铺状态:</label></div>#}
-{#                  {{ store_form.store_state }}#}
-{#              </div>#}
-{#              <div class="form-group">#}
-{#                  <div class="text-left"><label for="InputUsername">商铺照片:</label></div>#}
-{#                  {{ store_form.store_image }}#}
-{#              </div>#}
-{#              <div class="form-group">#}
-{#                  <div class="text-left"><label for="InputUsername">所属商家名称:</label></div>#}
-{#                  {{ store_form.manager_name }}#}
-{#              </div>#}
-{##}
-{##}
-{#              <button type="reset" class="btn btn-default pull-left">重置</button>#}
-{##}
-{#              <button type="submit" class="btn btn-primary pull-right">保存</button>#}
-{#          </form>#}
+          <form enctype="multipart/form-data" class='form-register' action="" method="post">
+              <h3 class="text-left">基本信息:</h3>
+              {% if register_form.captcha.errors %}
+                <div class="alert alert-warning">{{ register_form.captcha.errors }}</div>
+              {% elif message %}
+                <div class="alert alert-warning">{{ message }}</div>
+              {% endif %}
+
+              {% csrf_token %}
+              <div class="form-group">
+                  <div class="text-left"><label for="InputUsername">菜品名称:</label></div>
+                  {{ dish_form.dish_name}}
+              </div>
+              <div class="form-group">
+                  <div class="text-left"><label for="InputPassword">菜品描述：</label></div>
+                  {{ dish_form.dish_des }}
+              </div>
+              <div class="form-group">
+                  <div class="text-left"><label for="InputUsername">菜品价格:</label></div>
+                  {{ dish_form.dish_price }}
+              </div>
+              <div class="form-group">
+                  <div class="text-left"><label for="InputUsername">菜品状态:</label></div>
+                  {{ dish_form.dish_state }}
+              </div>
+              <div class="form-group">
+                  <div class="text-left"><label for="InputUsername">菜品照片:</label></div>
+                  {{ dish_form.dish_image }}
+              </div>
+
+
+
+              <button type="reset" class="btn btn-default pull-left">重置</button>
+
+              <button type="submit" class="btn btn-primary pull-right">保存</button>
+          </form>
         </div>
     </div> <!-- /container -->
 {% endblock %}

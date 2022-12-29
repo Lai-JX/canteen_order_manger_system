@@ -44,10 +44,9 @@ class Store(models.Model):
     def __str__(self):          # 决定了外键的值
         return self.canteen_id.canteen_name+self.store_name
     def update_store_url(self): # 更新需要跳转到新的页面，但是需要知道更新的是哪一个
-        # print('update_store')
         return reverse("update_store",kwargs={'store_id': self.store_id})
-    def del_store_url(self): # 更新需要跳转到新的页面，但是需要知道更新的是哪一个
-        # print('del_store')
+
+    def del_store_url(self):
         return reverse("del_store",kwargs={'store_id': self.store_id})
 
 
@@ -58,7 +57,7 @@ class Dish(models.Model):
     dish_price = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='菜品价格')
     dish_image = models.ImageField(upload_to='images/dish',blank=True, null=True, verbose_name='菜品照片')
     dish_describe = models.CharField(max_length=200, blank=True, null=True, verbose_name='菜品描述')
-    dish_state = models.IntegerField(choices=[(1,"销售中"),(2,"售罄")], verbose_name='菜品状态')
+    dish_state = models.IntegerField(choices=[(1,"销售中"),(0,"售罄")], verbose_name='菜品状态')
     # dish_order_num = models.IntegerField(default=0,verbose_name='下单数量')
 
     class Meta:
@@ -71,6 +70,7 @@ class Dish(models.Model):
 
     # 将菜品编号传递给订单
     def get_order_url_add(self):
+        print(reverse("order:get_order_add", kwargs={'dish_id': self.dish_id}))
         return reverse("order:get_order_add", kwargs={'dish_id': self.dish_id})
         # get_order是urlpatterns中
         # path('get_order/<slug:dish_id>', get_order, name='get_order') 里面的name；
@@ -82,19 +82,4 @@ class Dish(models.Model):
         return reverse("order:get_order_sub", kwargs={'dish_id': self.dish_id})
 
 
-class Manager(models.Model):
-    manager_id = models.AutoField(primary_key=True, verbose_name = '管理员编号')
-    manager_name = models.CharField(max_length=20, verbose_name='管理员昵称', unique=True)
-    manager_phone = models.CharField(max_length=20,verbose_name='管理员联系方式')
-    manager_pwd = models.CharField(max_length=100,verbose_name='管理员密码')
-    manager_canteen = models.ForeignKey(Canteen, models.SET_NULL, blank=True, null=True, verbose_name='管理的食堂')
-    manager_store = models.ForeignKey(Store, models.SET_NULL, blank=True, null=True, verbose_name='管理的商铺')
-    manager_label = models.IntegerField(choices=[(0, "商家"), (1,"食堂管理员")], verbose_name='管理员类型')
 
-    class Meta:
-        ordering = ['manager_id']
-        db_table = 'manager'
-        verbose_name = '管理员信息'
-        verbose_name_plural = verbose_name
-    def __str__(self):
-        return self.manager_name

@@ -6,8 +6,9 @@ from django.shortcuts import render, redirect
 
 from order.models import Indent, IndentInventory
 from user.models import Address
-from .forms import storeForm
-from .models import Canteen, Store, Dish, Manager
+from .forms import storeForm, dishForm
+from .models import Canteen, Store, Dish
+from user.models import Manager
 
 
 # Create your views here.
@@ -23,6 +24,21 @@ from .models import Canteen, Store, Dish, Manager
 
 
 def show_canteen(request):
+    # 是否更改状态（只有食堂管理员能更改）
+    canteen_id = request.POST.get('canteen_id')     # 选中的食堂
+    # 是否更改状态
+    if canteen_id is not None:
+        user = Manager.objects.get(manager_label=1, manager_id=request.session.get('user_id'))
+        # 用户管理的食堂
+        canteen = user.manager_canteen
+        # 用户只能修改自己管理的食堂
+        if int(canteen_id) == canteen.canteen_id:
+            pre_state = canteen.canteen_state   # 之前状态
+            canteen.canteen_state = '营业中' if pre_state == '休息中' else '休息中'
+            canteen.save()
+        else:
+            messages.warning(request,'管理员只能修改自己管理的食堂！')
+
     context = {
             'canteen_list': Canteen.objects.all(),
     }
@@ -144,7 +160,8 @@ def update_store(request, store_id):
     if request.session['label'] == 1:
         try:
             user = Manager.objects.get(manager_label=0,manager_id=request.session['user_id'])
-            if user.manager_store.store_id != store_id:
+            # print(type(user.manager_store.store_id))
+            if user.manager_store.store_id != int(store_id):
                 messages.warning(request, '商铺只允许被所属商家或食堂管理员修改！')
                 return redirect('/store/')
         except:
@@ -154,9 +171,10 @@ def update_store(request, store_id):
     return redirect('/add_store/')
 
 def add_store(request):
-    print('add_store url')
+    print('add_store')
     print(request.method)
     update_store_id = request.session.get('update_store_id')
+
     print('update_store_id:',update_store_id)
     # 判断是更新还是新增
     if update_store_id is not None:
@@ -204,5 +222,93 @@ def add_store(request):
                 business.manager_store = store
                 business.save()
                 del request.session['update_store_id']
+
             return redirect('/store/')
     return render(request,'canteen/add_store.html',locals())
+
+# 添加或修改菜品，store为要菜品对应的商铺
+def add_dish(request, store_id):
+    print('add_dish')
+    print(request.method)
+    update_dish_id = request.session.get('update_dish_id')
+
+    print('update_dish_id:',update_dish_id)
+    # 判断是更新还是新增
+    if update_dish_id is not None:
+        dish = Dish.objects.get(dish_id=update_dish_id)
+        dish_form = dishForm({
+            'dish_name':dish.dish_name,
+            'dish_des' :dish.dish_describe,
+            'dish_state' :dish.dish_state,
+            'dish_image' : dish.dish_image,
+            'dish_price' : dish.dish_price,
+        })
+    else:
+        dish_form = dishForm()
+    if request.method == "POST":
+        dish_form = dishForm(request.POST, request.FILES)    # 将表单用一个类封装起来 # request.POST返回一个字典，get是字典的内置方法
+        message = '请检查填写内容！'
+        print('dish_form valid',dish_form.is_valid())
+        if dish_form.is_valid():
+            # 对应商铺
+            print('store_id:',store_id)
+            store = Store.objects.get(store_id=store_id)
+
+            # 菜品属性
+            name = dish_form.cleaned_data.get('dish_name')
+            des = dish_form.cleaned_data.get('dish_des')
+            image = dish_form.cleaned_data.get('dish_image')
+            state = dish_form.cleaned_data.get('dish_state')
+            price = dish_form.cleaned_data.get('dish_price')
+            # 创建商铺
+            print(request.session['user_id'])
+            print('update_dish_id:',update_dish_id)
+            # 是否为新建商铺
+            if update_dish_id is None:
+                dish = Dish(store_id=Store.objects.get(store_id=store_id))
+
+            dish.dish_name=name
+            dish.dish_image=image
+            dish.dish_state=state
+            dish.dish_describe=des
+            dish.dish_price = price
+            dish.save()
+            if update_dish_id is not None:
+                del request.session['update_dish_id']
+
+            return redirect('/dish/')
+
+    return render(request,'canteen/add_dish.html',locals())
+
+def del_dish(request, dish_id):
+    print('del dish:dish_id:',dish_id)
+    dish = Dish.objects.get(dish_id=dish_id)
+    # 如果是商家，则只能删除自己的
+    if request.session['label'] == 1:
+        try:
+            user = Manager.objects.get(manager_label=0, manager_id=request.session['user_id'])
+            if user.manager_store.store_id != dish.store_id.store_id:
+                messages.warning(request, '菜品只允许被所属商家或食堂管理员删除！')
+                return redirect('/dish/')
+        except:
+            messages.warning(request, '商铺只允许被所属商家或食堂管理员删除！')
+            return redirect('/dish/')
+    dish.delete()
+    return redirect('/dish/')
+
+def update_dish(request, dish_id):
+    print('update dish:dish_id:', dish_id)
+    print('user_id:',(request.session['user_id']))
+    dish = Dish.objects.get(dish_id=dish_id)
+    # 如果是商家，则只能修改自己的
+    if request.session['label'] == 1:
+        try:
+            user = Manager.objects.get(manager_label=0,manager_id=request.session['user_id'])
+            if user.manager_store.store_id != dish.store_id.store_id:
+                messages.warning(request, '菜品只允许被所属商家或食堂管理员修改！')
+                return redirect('/dish/')
+        except:
+            messages.warning(request, '菜品只允许被所属商家或食堂管理员修改！')
+            return redirect('/dish/')
+    request.session['update_dish_id'] = dish_id
+    return redirect('/add_dish/{}'.format(dish.store_id.store_id))

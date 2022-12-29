@@ -60,13 +60,20 @@
                                 <p class="card-text li_">售价：{{ j.dish_price }} 元</p>
                                 <p class="card-text li_">评价：{{ j.dish_describe }}</p>
                                 <p class="card-text li_">下单数量：{{ dish_.dish_num }}</p>
-
-                                <div class="align-self-end container" style="align-content: space-around">
+                                {#  管理员和商家可更改或删除#}
+                                {% if request.session.label != 0 %}
+{#                                    {% if request.session.label == 2 %}#}
+                                    <a href="/del_dish/{{ j.dish_id }}" class="btn btn-warning btn-sm  "><font size="3px">删除</font></a>
+{#                                    {% endif %}#}
+                                    <a href="/update_dish/{{ j.dish_id }}" class="btn btn-success btn-sm addtocartbutton "><font size="3px">更新</font></a>
+                                {% else %}
+                                    <div class="align-self-end container" style="align-content: space-around">
                                     <a class="btn btn-success btn-sm " style="border-radius: 50%; font-size: 20px;font-weight: bolder"
                                        href="{{ j.get_order_url_add }}"><font size="3px">+</font></a>
                                     <a class="btn btn-success btn-sm addtocartbutton" style="border-radius: 50%;font-size: 20px;font-weight: bolder"
                                        href="{{ j.get_order_url_sub }}"><font size="4px">-</font></a>
-                                </div>
+                                    </div>
+                                {% endif %}
                             </div>
                     </div>
                 </li>
@@ -74,9 +81,11 @@
                 {% endfor %}
             {% endif %}
         {% endfor %}
-
     </ul>
 </div>
+    {% if request.session.label != 0 %}
+        <a href="/add_dish/{{ i.store_id }}" class='button primary pull-right' rel='menu-search-overlay' style="font-size: 16px">新增菜品</a>
+    {% endif %}
 {% endfor %}
 
 {% endblock %}

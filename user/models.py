@@ -7,6 +7,8 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
+from canteen.models import Canteen, Store
+
 
 class Address(models.Model):
     address_id = models.AutoField(primary_key=True, verbose_name='地址编号')
@@ -25,7 +27,22 @@ class Address(models.Model):
     def toStr(self):
         return f'{self.building}栋 {self.floor}层 {self.dormitory_num}; 地址描述:{self.address_describe}'
 
+class Manager(models.Model):
+    manager_id = models.AutoField(primary_key=True, verbose_name = '管理员编号')
+    manager_name = models.CharField(max_length=20, verbose_name='管理员昵称', unique=True)
+    manager_phone = models.CharField(max_length=20,verbose_name='管理员联系方式')
+    manager_pwd = models.CharField(max_length=100,verbose_name='管理员密码')
+    manager_canteen = models.ForeignKey(Canteen, models.SET_NULL, blank=True, null=True, verbose_name='管理的食堂')
+    manager_store = models.ForeignKey(Store, models.SET_NULL, blank=True, null=True, verbose_name='管理的商铺')
+    manager_label = models.IntegerField(choices=[(0, "商家"), (1,"食堂管理员")], verbose_name='管理员类型')
 
+    class Meta:
+        ordering = ['manager_id']
+        db_table = 'manager'
+        verbose_name = '管理员信息'
+        verbose_name_plural = verbose_name
+    def __str__(self):
+        return self.manager_name
 # class CustomerAddress(models.Model):
 #     customer = models.OneToOneField('CustomerInfo', models.CASCADE, primary_key=True)
 #     address = models.ForeignKey(Address, models.CASCADE)
