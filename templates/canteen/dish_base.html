@@ -239,18 +239,14 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for dish in order.dishes.all %}
-                    {% for dish_ in dish_list_ %}
-                        {% if dish.dish_id == dish_.dish.dish_id %}
+                {% for dish in dish_list_ %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
                     <td>{{ dish.dish_name }}</td>
                     <td>{{ dish.dish_price }}</td>
-                    <td>{{ dish_.dish_num }}</td>
+                    <td>{{ dish.dish_num }}</td>
                 </tr>
 {#                {% empty %}#}
-                        {% endif %}
-                    {% endfor %}
                     {% empty %}
                 {% endfor %}
 

@@ -21,8 +21,8 @@ from canteen.models import Dish, Store
 
 
 def show_order(request):
-    if not request.session.get('is_login', None):
-        messages.warning(request, "请先登录顾客账户~")
+    if (not request.session.get('is_login', None)) or request.session['label'] != 0:
+        messages.warning(request, "要使用订单功能，请先登录顾客账户~")
         return redirect('/user/login/')
 
     user_id = request.session['user_id']
@@ -41,7 +41,7 @@ def show_order(request):
         order['addr'] = i.indent_address
         order['state'] = i.indent_state
         order['price'] = i.indent_price
-        order['comment'] = '未评价' if i.comment is None else i.comment
+        order['comment'] = '未评价' if i.comment is None else i.comment.content
         dishes = []
         for j in i.dishes.all():
             dish = {}

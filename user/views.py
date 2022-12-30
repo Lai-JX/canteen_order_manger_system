@@ -72,11 +72,13 @@ def login(request):
                         user = CustomerInfo.objects.get(customer_name=username)
                         user_id = user.customer_id
                         pwd = user.customer_pwd
+                        phone = user.customer_phone
                     # 商家/食堂管理员
                     else:
                         user = Manager.objects.get(manager_name=username,manager_label=label-1)
                         user_id = user.manager_id
                         pwd = user.manager_pwd
+                        phone = user.manager_phone
                 except:
                     message = '用户不存在！'
                     return render(request, 'user/login.html', locals()) # locals() 以字典形式返回当前所有的本地变量
@@ -85,7 +87,7 @@ def login(request):
                 if pwd == hash_code(password):
                     request.session['is_login'] = True
                     request.session['user_id'] = user_id
-                    # request.session['user_phone'] = user.customer_phone
+                    request.session['user_phone'] = phone
                     request.session['label'] = label
                     if label==0:
                         # messages.success(request, '顾客: {}登录成功！'.format(user.customer_name))
@@ -171,7 +173,7 @@ def logout(request):
 
 def information(request):
     if not request.session.get('is_login', None):
-        messages.warning(request, "请先登录顾客账户~")
+        messages.warning(request, "请先登录账户~")
         return redirect('/user/login/')
 
     address_form = AddressForm()

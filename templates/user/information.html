@@ -6,9 +6,33 @@
 <link href="{% static 'css/login.css' %}" rel="stylesheet"/>{% endblock %}
 
 {% block content %}
+
 <div class="container formback">
     <div class="loginform jumbotron">
         <h3>个人信息中心</h3>
+        <form class='form-group' action="/user/show_info/" method="POST">
+            {% csrf_token %}
+            <div class="card-header">
+                <h5 align="left">用户名：{{ request.session.user_name }}</h5>
+                <h5 align="left">电话：{{ request.session.user_phone }}</h5>
+                <h5 align="left">用户类型：
+                    {% if request.session.label == 0 %}
+                        顾客
+                    {% elif request.session.label == 1 %}
+                        商家
+                    {% else %}
+                        食堂管理员
+                    {% endif %}
+                </h5>
+{#                <button type="reset" class="btn btn-default" href="/customer/info/">重置</button>#}
+            </div>
+        </form>
+    </div>
+</div>
+{% if request.session.label == 0 %}
+<div class="container formback">
+    <div class="loginform jumbotron">
+{#        <h3>个人信息中心</h3>#}
         <h5>（新增地址）</h5>
         <form class='form-group' action="/user/info/" method="POST">
             {% csrf_token %}
@@ -41,4 +65,5 @@
         </form>
     </div>
 </div>
+{% endif %}
 {% endblock %}

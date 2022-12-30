@@ -19,8 +19,52 @@ from user.models import Manager
 #         print('add_store')
 #         return True
 #     return False
+# 整理菜品列表并输出
+def get_order_dish_list(order_id):
+    dish_list_ = None
+    # 获取订单明细
+    if order_id is not None:
+        order = Indent.objects.get(indent_id=order_id)
+        dish_list_ = IndentInventory.objects.filter(indent=order.indent_id)
+        # 整理数据，方便输出
+        dish_list = []
+        for i in dish_list_:
+            dish = {}
+            dish['dish_price'] = i.dish.dish_price
+            dish['dish_name'] = i.dish.dish_name
+            dish['dish_num'] = i.dish_num
+            dish_list.append(dish)
+        return dish_list
+    return None
 
-
+# 整理菜品列表并输出
+def get_dish_list(order_id):
+    dish_list_ =None
+    # 获取订单明细
+    if order_id is not None:
+        order = Indent.objects.get(indent_id=order_id)
+        dish_list_ = IndentInventory.objects.filter(indent=order.indent_id)
+    # 整理数据，方便输出
+    dish_list = []
+    for i in Dish.objects.all():
+        dish = {}
+        dish['dish_price'] = i.dish_price
+        dish['dish_describe'] = i.dish_describe
+        dish['dish_id'] = i.dish_id
+        dish['store_id'] = i.store_id.store_id
+        dish['dish_name'] = i.dish_name
+        dish['dish_image'] = i.dish_image
+        dish['get_order_url_add'] = i.get_order_url_add()
+        dish['get_order_url_sub'] = i.get_order_url_sub()
+        dish['dish_num'] = 0
+        if dish_list_ is not None:
+            try:
+                cur_dish = dish_list_.get(dish_id=i.dish_id)
+                dish['dish_num'] = cur_dish.dish_num
+            except:
+                dish['dish_num'] = 0
+        dish_list.append(dish)
+    return dish_list
 
 
 def show_canteen(request):
@@ -56,7 +100,7 @@ def show_store(request):
     #     dish.save()
     #     store.dishes.add(dish)
     #     store.save()
-    order_show, order, dish_list_ = show_cur_order(request)
+    order_show, order = show_cur_order(request)
     # if is_add_store(request):
     #     print('is add')
     #     return redirect('/add_store/')
@@ -66,7 +110,7 @@ def show_store(request):
         'order_show':order_show,
         'order':order,
         'order_state':['未下单','已下单','已发货','已送达','已评价'],
-        'dish_list_': dish_list_,
+        'dish_list_':get_order_dish_list(request.session.get('order_id'))
     }
     # print(Canteen.objects.all()[0].canteen_id)
     # print(Store.objects.all()[0].canteen_id)
@@ -81,19 +125,14 @@ def show_dish(request):
     # dishes = []
     # for item in dish_list:
     #     dishes.append()
-    order_show, order, dish_list_ = show_cur_order(request)
-    if not dish_list_:
-        dish_list_ = []
-        for i in Dish.objects.all():
-            dish_list_.append({'dish':{'dish_id':i.dish_id}, 'dish_num':0})
-
+    order_show, order = show_cur_order(request)
     context = {
         'store_list': Store.objects.all(),
-        'dish_list': Dish.objects.all(),
+        'dish_list': get_dish_list(request.session.get('order_id')),
         'order_show':order_show,
         'order':order,
         'order_state':['未下单','已下单','已发货','已送达','已评价'],
-        'dish_list_':dish_list_,
+        'dish_list_':get_order_dish_list(request.session.get('order_id')),
     }
 
     # print(Dish.objects.all()[0].dish_id)
@@ -105,11 +144,11 @@ def show_cur_order(request):
     order_show = False
     order = None
     order_id = request.session.get('order_id')
-    dish_list = None
+    # dish_list = None
     # 每个菜品数量
-    if order_id is not None:
-        order = Indent.objects.get(indent_id=order_id)
-        dish_list = IndentInventory.objects.filter(indent=order.indent_id)
+    # if order_id is not None:
+    #     order = Indent.objects.get(indent_id=order_id)
+    #     dish_list = IndentInventory.objects.filter(indent=order.indent_id)
 
     # 能否获取到地址，能获取到则为下单
     order_address = request.POST.get('select_address')
@@ -128,7 +167,8 @@ def show_cur_order(request):
         order.indent_state='已下单'
         order.save()
         del request.session['order_id']
-        return False, None, None
+        messages.success(request,'下单成功！')
+        return False, None
 
     show = request.POST.get('show')
     # 是否展示订单
@@ -140,13 +180,13 @@ def show_cur_order(request):
     if order_show:
         if not request.session.get('is_login', None) or request.session.get('label') != 0:
             messages.warning(request, "请先登录顾客账户~")
-            return False, None,dish_list
+            return False, None
         if not request.session.get('order_id', None):
             messages.warning(request, "暂无订单~")
-            return False, None,dish_list
+            return False, None
         order_id = request.session['order_id']
         order = Indent.objects.get(indent_id=order_id)
-    return order_show, order,dish_list
+    return order_show, order
 
 def del_store(request, store_id):
     print('del store:store_id:',store_id)
@@ -217,10 +257,11 @@ def add_store(request):
             store.store_state=state
             store.store_describe=des
             store.save()
-
-            if update_store_id is not None:
+            # 商铺与商家绑定
+            if update_store_id is None:
                 business.manager_store = store
                 business.save()
+            else:
                 del request.session['update_store_id']
 
             return redirect('/store/')

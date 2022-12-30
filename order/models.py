@@ -41,7 +41,7 @@ class Indent(models.Model):
     indent_address = models.ForeignKey(Address, models.SET_NULL, blank=True, null=True,verbose_name='订单地址')
 
     class Meta:
-        ordering = ['date_time']
+        ordering = ['-date_time']
         db_table = 'indent'
         verbose_name = '订单信息'
         verbose_name_plural = verbose_name

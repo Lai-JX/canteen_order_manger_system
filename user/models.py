@@ -12,7 +12,7 @@ from canteen.models import Canteen, Store
 
 class Address(models.Model):
     address_id = models.AutoField(primary_key=True, verbose_name='地址编号')
-    building = models.CharField(max_length=20, verbose_name='楼栋编号')
+    building = models.CharField(max_length=10, verbose_name='楼栋编号')
     floor = models.CharField(max_length=10, verbose_name='楼层编号')
     dormitory_num = models.CharField(max_length=10,verbose_name='门牌号')
     address_describe = models.CharField(max_length=100, blank=True, null=True, verbose_name='地址描述')
