@@ -40,7 +40,7 @@
 {#{% endfor %}#}
 {% for i in store_list %}       {# 遍历各商铺 #}
 <div class="container headerdiv">
-    <h3 class="headertext" align="center" id="{{i.store_id}}"><strong></strong>{{ i.canteen_id.canteen_name }}『{{ i.store_name }}』</strong></h3>
+    <h3 class="headertext" align="center" id="{{i.store_id}}"><strong>{{ i.canteen_id.canteen_name }}『{{ i.store_name }}』</strong></h3>
 </div>
 <div class='wrapper fluid margin page-menu-list'>
     <ul class='grid padded-3 product'>
@@ -58,19 +58,20 @@
                                 <p class="card-text li_">售价：{{ j.dish_price }} 元</p>
                                 <p class="card-text li_">评价：{{ j.dish_describe }}</p>
                                 <p class="card-text li_">下单数量：{{ j.dish_num }}</p>
-                                {#  管理员和商家可更改或删除#}
-                                {% if request.session.label != 0 and lebel != None %}
-{#                                    {% if request.session.label == 2 %}#}
-                                    <a href="/del_dish/{{ j.dish_id }}" class="btn btn-warning btn-sm  "><font size="3px">删除</font></a>
-{#                                    {% endif %}#}
-                                    <a href="/update_dish/{{ j.dish_id }}" class="btn btn-success btn-sm addtocartbutton "><font size="3px">更新</font></a>
-                                {% else %}
+
+                                {% if request.session.label == 0 or request.session.label == None %}
                                     <div class="align-self-end container" style="align-content: space-around">
                                     <a class="btn btn-success btn-sm " style="border-radius: 50%; font-size: 20px;font-weight: bolder"
                                        href="{{ j.get_order_url_add }}"><font size="3px">+</font></a>
                                     <a class="btn btn-success btn-sm addtocartbutton" style="border-radius: 50%;font-size: 20px;font-weight: bolder"
                                        href="{{ j.get_order_url_sub }}"><font size="4px">-</font></a>
                                     </div>
+                                {#  管理员和商家可更改或删除#}
+                                {% else %}
+                                     {# {% if request.session.label == 2 %}#}
+                                    <a href="/del_dish/{{ j.dish_id }}" class="btn btn-warning btn-sm  "><font size="3px">删除</font></a>
+{#                                    {% endif %}#}
+                                    <a href="/update_dish/{{ j.dish_id }}" class="btn btn-success btn-sm addtocartbutton "><font size="3px">更新</font></a>
                                 {% endif %}
                             </div>
                     </div>

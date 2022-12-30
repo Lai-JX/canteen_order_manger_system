@@ -41,3 +41,5 @@ class AddressForm(forms.Form):
         attrs={'class': 'form-control', 'placeholder': "门牌号", }))
     address_describe = forms.CharField(label="地址描述", max_length=200, widget=forms.TextInput(
         attrs={'class': 'form-control', 'placeholder': "进一步描述", }))
+    phone = forms.CharField(label="联系方式",
+                            widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': "联系方式"}))

@@ -13,11 +13,17 @@
             {% csrf_token %}
             <div class="card-header">
                 <h5 align="left">用户名：{{ request.session.user_name }}</h5>
-                <h5 align="left">电话：{{ request.session.tel }}</h5>
-                <h5 align="left">校区：{{ request.session.district }}</h5>
-                <h5 align="left">校内建筑：{{ request.session.building }}</h5>
-                <h5 align="left">门牌号：{{ request.session.room }}</h5>
-                <button type="reset" class="btn btn-default" href="/customer/info/">重置</button>
+                <h5 align="left">电话：{{ request.session.user_phone }}</h5>
+                <h5 align="left">用户类型：
+                    {% if request.session.label == 0 %}
+                        顾客
+                    {% elif request.session.label == 1 %}
+                        商家
+                    {% else %}
+                        食堂管理员
+                    {% endif %}
+                </h5>
+{#                <button type="reset" class="btn btn-default" href="/customer/info/">重置</button>#}
             </div>
         </form>
     </div>

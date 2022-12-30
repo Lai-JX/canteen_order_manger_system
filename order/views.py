@@ -3,8 +3,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, get_object_or_404, redirect
 
 from canteen.views import show_cur_order
-from user.models import CustomerInfo
-from .models import Indent, IndentInventory
+from user.models import CustomerInfo, Manager
+from .models import Indent, IndentInventory, Comment
 from canteen.models import Dish, Store
 
 
@@ -19,14 +19,61 @@ from canteen.models import Dish, Store
 #
 #     return render(request, 'canteen/dish_list.html', locals())
 
+# 更新订单
+def update_order(request, label, user_id):
+    # 获取要更改的订单
+    order_toChange = None
+    if request.method == 'POST':
+        order_toChange_id = request.POST.get('order_change_id')
+        print('order_toChange_id:', order_toChange_id)
+        if order_toChange_id is not None:
+            order_toChange = Indent.objects.get(indent_id=order_toChange_id)
+
+    # 顾客 可更新订单评价
+    if label == 0:
+        order_list = Indent.objects.filter(customer_id=user_id)
+        order_toChange_id = request.POST.get('order_change_comment_id')
+        if order_toChange_id is not None:
+            comment_content = request.POST.get('comment')
+            order = Indent.objects.get(indent_id=order_toChange_id)
+            comment = order.comment
+            try:
+                comment.content = comment_content
+            except:
+                comment = Comment(content=comment_content)
+            comment.save()
+            order.comment = comment
+            order.save()
+    # 商家 可更新订单状态
+    elif label == 1:
+        user = Manager.objects.get(manager_label=0, manager_id=user_id)
+        order_list = Indent.objects.filter(store=user.manager_store)
+        store_id = request.POST.get('order_change_store')
+        # 只能管理自己对应的订单
+        if order_toChange is not None and user.manager_store.store_id == int(store_id):
+            order_toChange.indent_state = request.POST['select_state']
+            order_toChange.save()
+    # 食堂管理员 可更新订单状态
+    elif label == 2:
+        user = Manager.objects.get(manager_label=1, manager_id=user_id)
+        order_list = Indent.objects.filter(canteen=user.manager_canteen)
+        canteen_id = request.POST.get('order_change_canteen')
+        # 只能管理自己对应的订单
+        if order_toChange is not None and user.manager_canteen.canteen_id == int(canteen_id):
+            order_toChange.indent_state = request.POST['select_state']
+            order_toChange.save()
+    return order_list
 
 def show_order(request):
-    if (not request.session.get('is_login', None)) or request.session['label'] != 0:
-        messages.warning(request, "要使用订单功能，请先登录顾客账户~")
+    if (not request.session.get('is_login', None)):
+        messages.warning(request, "要使用订单功能，请先登录账户~")
         return redirect('/user/login/')
 
+    label = request.session['label']
     user_id = request.session['user_id']
-    order_list = Indent.objects.filter(customer_id=user_id)
+    order_list = update_order(request, label, user_id)
+    # update_order_comment(request)
+
     # 整理数据，方便输出
     order_list_ = []
     order = {}
@@ -37,6 +84,8 @@ def show_order(request):
         order['time'] = i.date_time
         order['canteen_name'] = i.canteen.canteen_name
         order['store_name'] = i.store.store_name
+        order['canteen_id'] = i.canteen.canteen_id
+        order['store_id'] = i.store.store_id
         order['phone'] = i.customer.customer_phone
         order['addr'] = i.indent_address
         order['state'] = i.indent_state
@@ -53,7 +102,7 @@ def show_order(request):
         order_list_.append(order)
 
 
-    return render(request, 'order/my_order.html', {'order_list':order_list_})
+    return render(request, 'order/my_order.html', {'order_list':order_list_, 'all_state':Indent.state_choice})
 
 
 def get_order_add(request, dish_id):

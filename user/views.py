@@ -15,14 +15,14 @@ from . import forms
 from .forms import AddressForm
 from .models import CustomerInfo, Address
 
-def getAddress(building,floor,dormitory,address_des):
+def getAddress(building,floor,dormitory,address_des,phone):
     try:
         addr = Address.objects.get(building=building,floor=floor,
-                                    dormitory_num=dormitory, address_describe=address_des)
+                                    dormitory_num=dormitory, address_describe=address_des, phone=phone)
         return addr
     except:
         addr = Address(building=building,floor=floor,
-                       dormitory_num=dormitory, address_describe=address_des)
+                       dormitory_num=dormitory, address_describe=address_des, phone=phone)
         addr.save()
         return addr
 
@@ -183,7 +183,7 @@ def information(request):
     # if customer.address:
     #     # print("已经填过地址")
     #     return redirect("customer:show_info")
-    address_form = AddressForm()
+    address_form = AddressForm({'phone':request.session.get('user_phone')})
     if request.method == "POST":
         address_form = AddressForm(request.POST)
         if address_form.is_valid():
@@ -192,8 +192,9 @@ def information(request):
             floor = address_form.cleaned_data['floor']
             dormitory_num = address_form.cleaned_data['dormitory_num']
             address_des = address_form.cleaned_data['address_describe']
+            phone = address_form.cleaned_data['phone']
             # 获取地址记录
-            addr = getAddress(building,floor,dormitory_num,address_des)
+            addr = getAddress(building,floor,dormitory_num,address_des,phone)
             # 添加地址
             customer.addresses.add(addr)
             customer.save()

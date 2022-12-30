@@ -73,6 +73,7 @@
 
 
     <link rel="stylesheet" href="{% static 'css/master.css' %}">
+    <link rel="stylesheet" href="{% static 'css/order.css' %}">
 
 </head>
 <style>
@@ -207,7 +208,7 @@
 
 {#              <p>#}
 {#                  <label>#}
-                    <strong>地址：</strong>
+                    <strong>地址及联系方式：</strong>
                     <select name="select_address">
                         <option selected value="{{ order.indent_address.address_id }}">{{ order.indent_address.toStr }}</option>
                         {% for i in order.customer.addresses.all %}

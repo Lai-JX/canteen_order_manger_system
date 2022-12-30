@@ -59,13 +59,13 @@
                         {% endif %}
                         <p class="card-text li_">{{ j.store_describe }}</p>
 {#                        管理员和商家可更改，但商家只可以修改自己的，也不能删除自己的；管理员能删除，商家不能删除 #}
-                        {% if request.session.label != 0 and lebel != None %}
+                        {% if request.session.label == 0 or request.session.label == None %}
+                            <a href="/dish#{{j.store_id}}" class="btn btn-success btn-sm addtocartbutton"><font size="3px">进入窗口</font></a>
+                        {% else %}
                             {% if request.session.label == 2 %}
                             <a href="{{j.del_store_url}}" class="btn btn-warning btn-sm  "><font size="3px">删除</font></a>
                             {% endif %}
                             <a href="{{j.update_store_url}}" class="btn btn-success btn-sm addtocartbutton "><font size="3px">更新</font></a>
-                        {% else %}
-                            <a href="/dish#{{j.store_id}}" class="btn btn-success btn-sm addtocartbutton"><font size="3px">进入窗口</font></a>
                         {% endif %}
 
                     </div>

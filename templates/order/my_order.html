@@ -31,7 +31,7 @@
 </style>
     <div class='overlay active' style="background: #ececec; opacity: 0.95;margin-top: 6vh; padding-top: 10px;width:100%;height:100vh;overflow-y:auto">
       <hr class='body'>
-        <h2 style="text-align:center; font-weight:bold; font-size: 24px; margin-bottom: 20px">历史订单</h2>
+        <h2 style="text-align:center; font-weight:bold; font-size: 24px; margin-bottom: 20px">所有订单</h2>
         {% for order in order_list %}
         <ul class='flex justify-around logging-in-element', style="margin-top: 20px">
             <li class="li_">
@@ -56,7 +56,29 @@
             </li>
 
             <li class="li_">
-                <p><strong>订单状态：</strong>{{ order.state }}</p>
+
+                {% if request.session.label == 0 %}
+                    <p><strong>订单状态：</strong>{{ order.state }}</p>
+                {% else %}
+                    <strong>订单状态：</strong>
+                    <form action="" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="order_change_id" value={{ order.id }}>
+                    <input type="hidden" name="order_change_store" value={{ order.store_id }}>
+                    <input type="hidden" name="order_change_canteen" value={{ order.canteen_id }}>
+                        <select name="select_state">
+                            <option selected value="{{ order.state }}">{{ order.state }}</option>
+                            {% for i in all_state %}
+                                {% if i != order.state %}
+                                <option value="{{ i }}">{{ i }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        <div >
+                            <button class='btn btn-primary pull-right' rel='menu-search-overlay' name="show1" style="font-size: 4px" >修改</button>
+                        </div>
+                    </form>
+                {% endif %}
             </li>
             <li class="li_">
                 <p><strong>订单总价：</strong>{{ order.price }}</p>
@@ -87,7 +109,23 @@
                 </tbody>
             </table>
         </div>
-        <p style="margin-left: 50px"><strong>评价：</strong>{{ order.comment }}</p>
+
+        {% if request.session.label == 0 %}
+            <h5 style="margin-left: 50px"><strong>评价：</strong></h5>
+            <form action="" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="order_change_comment_id" value={{ order.id }}>
+                <div>
+                   <textarea style="margin-left: 50px;margin-right: 50px;font-weight: normal" name="comment">{{ order.comment }}</textarea>
+{#                   <div class="faceDiv"> </div>#}
+                   <button class='btn btn-primary bottom-right' style="font-size: 4px;margin-left: 90%;" >确定</button>
+                 </div>
+            </form>
+        {% else %}
+            <h5 style="margin-left: 50px"><strong>评价：</strong></h5>
+            <p style="margin-left: 50px">{{ order.comment }}</p>
+
+        {% endif %}
         <div class="dashed"></div>
         {% endfor %}
       </div>

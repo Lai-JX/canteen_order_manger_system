@@ -33,7 +33,7 @@
 <div class="container formback">
     <div class="loginform jumbotron">
 {#        <h3>个人信息中心</h3>#}
-        <h5>（新增地址）</h5>
+        <h5>（新增地址及联系方式）</h5>
         <form class='form-group' action="/user/info/" method="POST">
             {% csrf_token %}
             <div class="form-group">
@@ -58,6 +58,10 @@
             <div class="form-group">
                 <div class="text-left"><label for="InputHouse_number">进一步描述：</label></div>
                 {{ address_form.address_describe }}
+            </div>
+            <div class="form-group">
+                <div class="text-left"><label for="InputHouse_number">对应的联系方式：</label></div>
+                {{ address_form.phone }}
             </div>
             <button type="reset" class="btn btn-default pull-left">重置</button>
             <button type="submit" class="btn btn-primary pull-right">提交</button>

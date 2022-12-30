@@ -16,7 +16,7 @@ class Comment(models.Model):
     comment_id = models.AutoField(primary_key=True, verbose_name = '评论编号')
     score = models.SmallIntegerField(choices=[(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)], default=5, verbose_name='评分')
     content = models.CharField(max_length=200, blank=True, null=True, verbose_name='评价内容')
-    time = models.DateTimeField(auto_now_add=True, verbose_name='评价时间')
+    time = models.DateTimeField(auto_now=True, verbose_name='评价时间')
 
     class Meta:
         ordering = ['time']
@@ -28,6 +28,9 @@ class Comment(models.Model):
 
 
 class Indent(models.Model):
+    state_choice = ['未下单',  '已下单','已发货', '已送达',  '已评价']
+    state = [('未下单','未下单'),('已下单', '已下单'), ('已发货', '已发货'), ('已送达', '已送达'), ('已评价', '已评价')]
+
     indent_id = models.AutoField(primary_key=True, verbose_name = '订单编号')
     customer = models.ForeignKey(CustomerInfo, models.CASCADE, verbose_name='顾客')
     store = models.ForeignKey(Store, models.SET_NULL,blank=True, null=True, verbose_name='商铺')
@@ -36,7 +39,7 @@ class Indent(models.Model):
     date_time = models.DateTimeField(auto_now_add=True, verbose_name='下单时间')
     indent_price = models.DecimalField(max_digits=5, decimal_places=2, default=0,verbose_name='订单价格')
     indent_notes = models.CharField(max_length=100, blank=True, null=True, verbose_name='订单备注')
-    indent_state = models.CharField(max_length=10, default='未下单', choices=[('未下单','未下单'),('已下单', '已下单'), ('已发货', '已发货'), ('已送达', '已送达'), ('已评价', '已评价')], verbose_name='订单状态')
+    indent_state = models.CharField(max_length=10, default='未下单', choices=state, verbose_name='订单状态')
     dishes = models.ManyToManyField(Dish, through='IndentInventory', through_fields=('indent', 'dish'))
     indent_address = models.ForeignKey(Address, models.SET_NULL, blank=True, null=True,verbose_name='订单地址')
 
@@ -46,6 +49,9 @@ class Indent(models.Model):
         verbose_name = '订单信息'
         verbose_name_plural = verbose_name
 
+    # @staticmethod
+    # def get_all_state(self):
+    #     return [i[0] for i in self.state]
     # 删除订单
     def del_order_url(self):
         print('del_order_url')
