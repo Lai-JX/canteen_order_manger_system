@@ -17,11 +17,8 @@ class DishAdmin(admin.ModelAdmin):
     list_per_page = 10
     list_display = ['dish_id', 'dish_name', 'dish_price', 'dish_image', 'dish_describe', 'dish_state']
 
-class ManagerAdmin(admin.ModelAdmin):
-    list_per_page = 10
-    list_display = ['manager_id', 'manager_name', 'manager_phone', 'manager_pwd', 'manager_canteen', 'manager_store', 'manager_label']
 
 admin.site.register(Canteen, CanteenAdmin)
 admin.site.register(Store, StoreAdmin)
 admin.site.register(Dish, DishAdmin)
-admin.site.register(Manager, ManagerAdmin)
+

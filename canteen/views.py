@@ -95,7 +95,7 @@ def show_store(request):
     #                   store_describe='猪肚包鸡，是一道广东省传统的地方名菜，属于客家菜系，又名猪肚煲鸡、凤凰投胎，流行于广东的深圳、惠州、河源、梅州等粤东一带，是广东客家地区酒席必备的餐前用汤，汤里浓中带清，有浓郁的药材味和胡椒香气。最早是客家女人坐月子时吃的一道菜肴。',
     #                   store_image='D:\hgs-3-1\DB\lab\DB4\img\猪肚鸡店铺.webp', store_state=1)
     #     store.save()
-    #     dish = Dish(dish_name='柠檬猪肚鸡', dish_price=16, dish_image='../../../img/柠檬猪肚鸡.webp', dish_describe='经济实惠',
+    #     dish = Dish(dish_name='柠檬猪肚鸡', dish_price=16, dish_image='../../../img/柠檬猪肚鸡_malpson.webp', dish_describe='经济实惠',
     #          dish_state=1)
     #     dish.save()
     #     store.dishes.add(dish)
@@ -127,6 +127,7 @@ def show_dish(request):
     #     dishes.append()
     order_show, order = show_cur_order(request)
     context = {
+        'canteen_list':Canteen.objects.all(),
         'store_list': Store.objects.all(),
         'dish_list': get_dish_list(request.session.get('order_id')),
         'order_show':order_show,
@@ -134,9 +135,18 @@ def show_dish(request):
         'order_state':['未下单','已下单','已发货','已送达','已评价'],
         'dish_list_':get_order_dish_list(request.session.get('order_id')),
     }
-
+    if request.method == 'POST':
+        dish_name = request.POST.get('dish_name')
+        if dish_name is not None:
+            try:
+                dish = Dish.objects.get(dish_name=dish_name)
+                return redirect('/dish/#{}'.format(dish.dish_id))
+            except:
+                # context['messages']=["该菜品不存在",]
+                # return redirect('/dish/#{}'.format(context['dish_list'][0]['dish_id']))
+                return redirect('/dish/')
     # print(Dish.objects.all()[0].dish_id)
-    # print(Store.objects.all()[0].dish_id)
+    print(Store.objects.all())
     # print(dish_list_[0]['dish_id'])
     return render(request,'canteen/dish_list.html', context)
 

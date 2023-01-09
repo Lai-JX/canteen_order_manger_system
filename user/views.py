@@ -145,7 +145,7 @@ def register(request):
                 customer = CustomerInfo(customer_sex = sex, customer_name = username,
                                         customer_pwd = hash_code(password1), customer_phone = phone)
                 customer.save()
-                addr = getAddress(address_p1, address_p2, address_p3, address_des)
+                addr = getAddress(address_p1, address_p2, address_p3, address_des,phone)
                 # addr = Address(building=address_p1, floor=address_p2, dormitory_num=address_p3,address_describe=address_des)
                 # addr.save()
                 customer.addresses.add(addr)

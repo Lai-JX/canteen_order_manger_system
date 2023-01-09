@@ -74,6 +74,9 @@ def show_order(request):
     order_list = update_order(request, label, user_id)
     # update_order_comment(request)
 
+    comment = Comment(score=5, content="特别好吃")
+    comment.save()
+
     # 整理数据，方便输出
     order_list_ = []
     order = {}
@@ -83,9 +86,9 @@ def show_order(request):
         order['id'] = i.indent_id
         order['time'] = i.date_time
         order['canteen_name'] = i.canteen.canteen_name
-        order['store_name'] = i.store.store_name
+        order['store_name'] = '' if i.store is None else i.store.store_name
         order['canteen_id'] = i.canteen.canteen_id
-        order['store_id'] = i.store.store_id
+        order['store_id'] = '' if i.store is None else i.store.store_id
         order['phone'] = i.customer.customer_phone
         order['addr'] = i.indent_address
         order['state'] = i.indent_state

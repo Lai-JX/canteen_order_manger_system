@@ -38,7 +38,16 @@
 {#    </div>#}
 {#</div>#}
 {#{% endfor %}#}
+<form action="" method="post">
+    {% csrf_token %}
+    <div class='field search primary pull-right' style="background: white;margin: 5px;padding: 3px;display: flex;justify-content: space-around">
+        <input type='text' id='menu-search-input' name="dish_name" placeholder='搜索菜品'/>
+        <button type="submit" class="icon" style="background-image: url('https://www-static.chinacdn.starbucks.com.cn/prod/assets/icons/icon-search.svg');width: 25px"></button>
+    </div>
+</form>
+{% for k in canteen_list %}
 {% for i in store_list %}       {# 遍历各商铺 #}
+{% if k.canteen_id == i.canteen_id.canteen_id %}
 <div class="container headerdiv">
     <h3 class="headertext" align="center" id="{{i.store_id}}"><strong>{{ i.canteen_id.canteen_name }}『{{ i.store_name }}』</strong></h3>
 </div>
@@ -83,6 +92,9 @@
     {% if request.session.label != 0 %}
         <a href="/add_dish/{{ i.store_id }}" class='button primary pull-right' rel='menu-search-overlay' style="font-size: 16px">新增菜品</a>
     {% endif %}
+{% endif %}
+{% endfor %}
+
 {% endfor %}
 
 {% endblock %}
